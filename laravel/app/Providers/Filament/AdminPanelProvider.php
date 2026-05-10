@@ -29,6 +29,10 @@ class AdminPanelProvider extends PanelProvider {
                 \App\Filament\Resources\ProductPhotoResource::class,
                 \App\Filament\Resources\ProductPriceResource::class,
                 \App\Filament\Resources\WorkPostResource::class,
+                \App\Filament\Resources\GalleryPhotoResource::class,
+            ])
+            ->widgets([
+                \App\Filament\Widgets\StorageOverviewWidget::class,
             ])
             ->pages([Pages\Dashboard::class])
             ->middleware([

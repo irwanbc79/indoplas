@@ -851,38 +851,65 @@
     <div class="section-label">Galeri & Proyek</div>
     <h2 class="section-title">Hasil Nyata dari Lapangan</h2>
     <p class="section-sub">Lihat langsung toko, gudang, dan workshop kami — bukti bahwa kami serius dalam kualitas.</p>
+    @if($pinnedGallery->isNotEmpty())
+    @php $galleryUrls = $pinnedGallery->map(fn($p) => $p->getFirstMediaUrl('photo','display') ?: $p->getFirstMediaUrl('photo'))->filter()->values(); @endphp
     <div class="gallery-grid reveal">
-      <div class="gallery-item">
+      @foreach($pinnedGallery as $i => $photo)
+      @php $displayUrl = $photo->getFirstMediaUrl('photo','display') ?: $photo->getFirstMediaUrl('photo'); $thumbUrl = $photo->getFirstMediaUrl('photo','thumb') ?: $displayUrl; @endphp
+      @if($displayUrl)
+      <div class="gallery-item" onclick="openGalleryLightbox({{ $i }})" style="cursor:pointer;">
+        <img src="{{ $thumbUrl }}" alt="{{ $photo->title ?: 'Galeri Indoplas' }}" loading="lazy">
+        <div class="gallery-item-overlay">&#128269;</div>
+      </div>
+      @endif
+      @endforeach
+    </div>
+    @else
+    <div class="gallery-grid reveal">
+      <div class="gallery-item" onclick="openGalleryLightbox(0)" style="cursor:pointer;">
         <img src="uploads/pasted-1777104715709-0.png" alt="Toko Indoplas">
-        <div class="gallery-item-overlay">🔍</div>
+        <div class="gallery-item-overlay">&#128269;</div>
       </div>
-      <div class="gallery-item">
+      <div class="gallery-item" onclick="openGalleryLightbox(1)" style="cursor:pointer;">
         <img src="uploads/pasted-1777104731496-0.png" alt="Stok Material">
-        <div class="gallery-item-overlay">🔍</div>
+        <div class="gallery-item-overlay">&#128269;</div>
       </div>
-      <div class="gallery-item">
+      <div class="gallery-item" onclick="openGalleryLightbox(2)" style="cursor:pointer;">
         <img src="uploads/pasted-1777104807424-0.png" alt="Workshop">
-        <div class="gallery-item-overlay">🔍</div>
+        <div class="gallery-item-overlay">&#128269;</div>
       </div>
-      <div class="gallery-item">
+      <div class="gallery-item" onclick="openGalleryLightbox(3)" style="cursor:pointer;">
         <img src="uploads/pasted-1777104788128-0.png" alt="Mesin Produksi">
-        <div class="gallery-item-overlay">🔍</div>
+        <div class="gallery-item-overlay">&#128269;</div>
       </div>
-      <div class="gallery-item">
+      <div class="gallery-item" onclick="openGalleryLightbox(4)" style="cursor:pointer;">
         <img src="uploads/pasted-1777104700543-0.png" alt="Gudang">
-        <div class="gallery-item-overlay">🔍</div>
+        <div class="gallery-item-overlay">&#128269;</div>
       </div>
-      <div class="gallery-item">
+      <div class="gallery-item" onclick="openGalleryLightbox(5)" style="cursor:pointer;">
         <img src="uploads/pasted-1777104820663-0.png" alt="Stok UPVC">
-        <div class="gallery-item-overlay">🔍</div>
+        <div class="gallery-item-overlay">&#128269;</div>
       </div>
-      <div class="gallery-item">
+      <div class="gallery-item" onclick="openGalleryLightbox(6)" style="cursor:pointer;">
         <img src="uploads/WhatsApp Image 2026-04-21 at 10.32.46.jpeg" alt="Stok Material Import">
-        <div class="gallery-item-overlay">🔍</div>
+        <div class="gallery-item-overlay">&#128269;</div>
       </div>
+    </div>
+    @endif
+    <div style="text-align:center;margin-top:40px;">
+      <a href="{{ route('galeri') }}" style="display:inline-block;padding:14px 36px;background:var(--gold);color:var(--blue-dark);font-weight:800;border-radius:50px;text-decoration:none;font-size:15px;letter-spacing:0.5px;transition:all .2s;">Lihat Semua Foto &rarr;</a>
     </div>
   </div>
 </section>
+
+<!-- GALLERY LIGHTBOX -->
+<div id="galleryLightbox" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;align-items:center;justify-content:center;" onclick="closeGalleryLightbox()">
+  <button onclick="event.stopPropagation();galleryLightboxNav(-1)" style="position:absolute;left:20px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:32px;width:56px;height:56px;border-radius:50%;cursor:pointer;z-index:10000;">&#8592;</button>
+  <img id="galleryLightboxImg" src="" alt="" style="max-width:90vw;max-height:90vh;border-radius:12px;object-fit:contain;box-shadow:0 8px 48px rgba(0,0,0,0.6);" onclick="event.stopPropagation()">
+  <div id="galleryLightboxCaption" style="position:absolute;bottom:24px;left:50%;transform:translateX(-50%);color:#fff;font-size:14px;background:rgba(0,0,0,0.5);padding:8px 20px;border-radius:20px;white-space:nowrap;"></div>
+  <button onclick="event.stopPropagation();galleryLightboxNav(1)" style="position:absolute;right:20px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:32px;width:56px;height:56px;border-radius:50%;cursor:pointer;z-index:10000;">&#8594;</button>
+  <button onclick="closeGalleryLightbox()" style="position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:24px;width:44px;height:44px;border-radius:50%;cursor:pointer;">&#10005;</button>
+</div>
 
 <!-- VIDEO SECTION -->
 <section style="background:#fff; padding:80px 5%;">
@@ -1358,6 +1385,47 @@
 
   // LAZY LOAD fallback
   document.querySelectorAll('img:not([loading])').forEach(img => img.setAttribute('loading', 'lazy'));
+
+  // GALLERY LIGHTBOX
+  @if($pinnedGallery->isNotEmpty())
+  var _galleryUrls = {!! json_encode($galleryUrls->values()) !!};
+  var _galleryTitles = {!! json_encode($pinnedGallery->pluck('title')->map(fn($t) => $t ?: 'Galeri Indoplas')->values()) !!};
+  @else
+  var _galleryUrls = [
+    'uploads/pasted-1777104715709-0.png','uploads/pasted-1777104731496-0.png',
+    'uploads/pasted-1777104807424-0.png','uploads/pasted-1777104788128-0.png',
+    'uploads/pasted-1777104700543-0.png','uploads/pasted-1777104820663-0.png',
+    'uploads/WhatsApp Image 2026-04-21 at 10.32.46.jpeg'
+  ];
+  var _galleryTitles = ['Toko Indoplas','Stok Material','Workshop','Mesin Produksi','Gudang','Stok UPVC','Stok Material Import'];
+  @endif
+  var _galleryIdx = 0;
+  function openGalleryLightbox(idx) {
+    _galleryIdx = idx;
+    var lb = document.getElementById('galleryLightbox');
+    lb.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    _updateGalleryLightbox();
+  }
+  function _updateGalleryLightbox() {
+    document.getElementById('galleryLightboxImg').src = _galleryUrls[_galleryIdx];
+    document.getElementById('galleryLightboxCaption').textContent = (_galleryTitles[_galleryIdx] || '') + ' (' + (_galleryIdx+1) + '/' + _galleryUrls.length + ')';
+  }
+  function galleryLightboxNav(dir) {
+    _galleryIdx = (_galleryIdx + dir + _galleryUrls.length) % _galleryUrls.length;
+    _updateGalleryLightbox();
+  }
+  function closeGalleryLightbox() {
+    document.getElementById('galleryLightbox').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e) {
+    var lb = document.getElementById('galleryLightbox');
+    if (lb.style.display !== 'flex') return;
+    if (e.key === 'ArrowLeft') galleryLightboxNav(-1);
+    if (e.key === 'ArrowRight') galleryLightboxNav(1);
+    if (e.key === 'Escape') closeGalleryLightbox();
+  });
 </script>
 </body>
 </html>
