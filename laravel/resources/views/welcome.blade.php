@@ -45,6 +45,7 @@
 </script> -->
 
 <!-- JSON-LD: LocalBusiness Schema untuk Google -->
+@verbatim
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -84,6 +85,7 @@
   "hasMap": "https://maps.app.goo.gl/T9uvPb8NsLPE19Kv5"
 }
 </script>
+@endverbatim
 <style>
   :root {
     --blue: #1a52b8;
