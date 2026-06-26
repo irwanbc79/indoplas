@@ -106,8 +106,9 @@ footer-bar{background:var(--blue-dark);padding:20px 32px;text-align:center;color
   @endif
 </div>
 
-<div style="background:var(--blue-dark);padding:20px 32px;text-align:center;color:rgba(255,255,255,.6);font-size:13px;">
-  © {{ date('Y') }} CV. Indoplas Mandiri Sejahtera — <a href="/" style="color:var(--gold);text-decoration:none;">Kembali ke Beranda</a>
+<div style="background:var(--blue-dark);padding:20px 32px;text-align:center;color:rgba(255,255,255,.6);font-size:13px;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 16px;">
+  <span>© {{ date('Y') }} CV. Indoplas Mandiri Sejahtera — <a href="/" style="color:var(--gold);text-decoration:none;">Kembali ke Beranda</a></span>
+  <span style="opacity:0.8;">Powered by: <a href="https://morabangun.com" target="_blank" style="color:var(--gold);text-decoration:none;">morabangun.com</a></span>
 </div>
 
 <!-- Lightbox -->
